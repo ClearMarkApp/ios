@@ -60,7 +60,7 @@ struct ClassListResponseBody:  Decodable {
         
         // run time variables
         var uiColor: Color {
-            Color(color) // assumes Color extension for hex exists
+            Color(hex: color) // assumes Color extension for hex exists
         }
     }
 }

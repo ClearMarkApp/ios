@@ -9,8 +9,9 @@ import GoogleSignIn
 import SwiftUI
 
 @main
-struct DemoApp: App {
-    @State var user: User?
+struct iosApp: App {
+    @State var user: GoogleUser?
+    
     
     var body: some Scene {
         WindowGroup {
@@ -19,17 +20,16 @@ struct DemoApp: App {
                 GIDSignIn.sharedInstance.handle(url)
             }
             .onAppear {
-                GIDSignIn.sharedInstance.restorePreviousSignIn {user, error in
-                    if let user {
-                        self.user = .init(name: user.profile?.name ?? "")
+                GIDSignIn.sharedInstance.restorePreviousSignIn { gidUser, error in
+                    if let gidUser {
+                        self.user = .init(
+                            firstName: gidUser.profile?.givenName ?? "",
+                            lastName: gidUser.profile?.familyName ?? "",
+                            email: gidUser.profile?.email ?? ""
+                        )
                     }
                 }
-                
             }
         }
     }
-}
-
-struct User {
-    var name: String
 }

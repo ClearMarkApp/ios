@@ -8,19 +8,26 @@
 import SwiftUI
 import GoogleSignIn
 
+/*
 struct ContentView: View {
-    @Binding var user: User?
+    var body: some View {
+        var email = "test@test.com"
+        
+        if (email.isEmpty) {
+            LoginView()
+        } else {
+            HomeView()
+        }
+    }
+}
+*/
+
+struct ContentView: View {
+    @Binding var user: GoogleUser?
     
     var body: some View {
         if let user {
-            Text("Hello nibs! \(user.name)")
-            Button {
-                
-                GIDSignIn.sharedInstance.signOut()
-                self.user = nil
-            } label: {
-                Text("Log out")
-            }
+            HomeView(user: self.$user)
         } else {
             LoginView(user: self.$user)
         }

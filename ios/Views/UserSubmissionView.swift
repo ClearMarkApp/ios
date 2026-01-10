@@ -1,10 +1,3 @@
-//
-//  UserSubmissionView.swift
-//  ios
-//
-//  Created by Lindsay Cheng on 2026-01-10.
-//
-
 import SwiftUI
 import PhotosUI
 import PDFKit

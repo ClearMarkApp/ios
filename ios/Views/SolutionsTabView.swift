@@ -195,6 +195,9 @@ struct SolutionsTabView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
         .environment(\.editMode, $editMode)
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
 }
 
@@ -369,6 +372,12 @@ struct QuestionBlock: View {
         .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 2)
         .shadow(color: Color.black.opacity(0.04), radius: 2, x: 0, y: 1)
         .padding(.trailing, isReorderMode ? 30 : 0)
+    }
+}
+
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 

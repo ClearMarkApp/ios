@@ -72,4 +72,20 @@ final class APIClient {
         decoder.dateDecodingStrategy = .iso8601
         return try decoder.decode(T.self, from: data)
     }
+    
+    func requestData(path: String, method: HTTPMethod) async throws -> Data {
+        var request = URLRequest(url: baseURL.appendingPathComponent(path))
+        request.httpMethod = method.rawValue
+        // Add any headers you need (auth tokens, etc.)
+        request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+        
+        return data
+    }
 }

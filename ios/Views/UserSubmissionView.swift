@@ -369,7 +369,13 @@ struct UserSubmissionView: View {
 //        .animation(.easeInOut(duration: 0.3), value: aiGrading.error)
 //        .animation(.easeInOut(duration: 0.3), value: aiGrading.isSuccess)
         .sheet(isPresented: $showingDocumentPicker) {
-            DocumentPicker()
+            DocumentPicker(onDocumentPicked: { url in
+                print("PDF selected: \(url)")
+                Task {
+                    await vm.uploadFile(fileURL: url, userId: userId, assignmentId: assignmentId)
+                }
+                print("allegedly sent")
+            })
         }
         .sheet(isPresented: $showingDocumentScanner) {
             DocumentScannerView(isPresented: $showingDocumentScanner) { pdfURL in
@@ -385,6 +391,9 @@ struct UserSubmissionView: View {
             if let submission = userSubmissionInfo.submission {
                 PDFViewerView(pdfUrl: submission.imageUrl, isPresented: $isPDFZoomed)
             }
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
     }
     
@@ -703,8 +712,10 @@ struct GradeCardView: View {
 }
 
 struct DocumentPicker: UIViewControllerRepresentable {
+    let onDocumentPicked: (URL) -> Void
+    
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.image, .pdf])
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf])
         picker.allowsMultipleSelection = false
         picker.delegate = context.coordinator
         return picker
@@ -725,7 +736,30 @@ struct DocumentPicker: UIViewControllerRepresentable {
         
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             guard let url = urls.first else { return }
-            print("Selected document: \(url)")
+            
+            // Start accessing security-scoped resource
+            guard url.startAccessingSecurityScopedResource() else {
+                print("Couldn't access security-scoped resource")
+                return
+            }
+            defer { url.stopAccessingSecurityScopedResource() }
+            
+            // Copy file to app's temporary directory
+            let tempDir = FileManager.default.temporaryDirectory
+            let tempURL = tempDir.appendingPathComponent(url.lastPathComponent)
+            
+            do {
+                // Remove existing file if it exists
+                try? FileManager.default.removeItem(at: tempURL)
+                
+                // Copy the file
+                try FileManager.default.copyItem(at: url, to: tempURL)
+                
+                // Pass the copied file URL
+                parent.onDocumentPicked(tempURL)
+            } catch {
+                print("Error copying file: \(error)")
+            }
         }
     }
 }

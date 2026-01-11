@@ -386,6 +386,9 @@ struct UserSubmissionView: View {
                 PDFViewerView(pdfUrl: submission.imageUrl, isPresented: $isPDFZoomed)
             }
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
     
     private func statusIcon(for status: SubmissionStatus) -> String {

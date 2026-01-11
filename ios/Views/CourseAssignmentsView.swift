@@ -11,6 +11,7 @@ struct CourseAssignmentsView: View {
     let courseId: Int
     let assignments: [CourseDetailResponseBody.Assignment]?
     @State private var showCreateAssignment = false
+    let onUpdate : () async -> Void
     
     var body: some View {
         if let assignments = assignments {
@@ -45,7 +46,10 @@ struct CourseAssignmentsView: View {
                 }
             }
             .sheet(isPresented: $showCreateAssignment) {
-                CreateAssignmentView(courseId: courseId)
+                CreateAssignmentView(courseId: courseId, onUpdate : onUpdate)
+            }
+            .refreshable {
+                await onUpdate()
             }
         }
     }
@@ -53,6 +57,6 @@ struct CourseAssignmentsView: View {
 
 #Preview {
     NavigationStack {
-        CourseAssignmentsView(courseId: 1, assignments: previewCourseDetailData.assignments)
+        CourseAssignmentsView(courseId: 1, assignments: previewCourseDetailData.assignments, onUpdate : {})
     }
 }

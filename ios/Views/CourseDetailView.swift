@@ -38,10 +38,19 @@ struct CourseDetailView: View {
                     
                     // Content based on selected tab
                     TabView(selection: $selectedTab) {
-                        CourseAssignmentsView(courseId: courseId, assignments: vm.courseDetail?.assignments)
+                        CourseAssignmentsView(courseId: courseId, assignments: vm.courseDetail?.assignments, onUpdate: {
+                            Task {
+                                await vm.fetchCourseDetail(courseId: courseId)
+                            }
+                        })
                             .tag(0)
                         
                         CoursePeopleView(courseId: courseId, users: vm.courseDetail?.users, onUserUpdated: {
+                            Task {
+                                await vm.fetchCourseDetail(courseId: courseId)
+                            }
+                        },
+                            onUpdate : {
                             Task {
                                 await vm.fetchCourseDetail(courseId: courseId)
                             }

@@ -11,6 +11,7 @@ struct AddPersonToCourseView: View {
     let courseId: Int
     @Environment(\.dismiss) private var dismiss
     @StateObject private var vm = CreateEnrollmentModel()
+    let onUpdate : () async -> Void
 
     @State private var email = ""
 
@@ -68,6 +69,7 @@ struct AddPersonToCourseView: View {
                             )
                             if vm.error == nil {
                                 dismiss()
+                                await onUpdate()
                             }
                         }
                     } label: {
@@ -105,5 +107,5 @@ struct AddPersonToCourseView: View {
 }
 
 #Preview {
-    AddPersonToCourseView(courseId: 1)
+    AddPersonToCourseView(courseId: 1, onUpdate : {})
 }

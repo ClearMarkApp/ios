@@ -11,6 +11,7 @@ struct CoursePeopleView: View {
     let courseId: Int
     let users: [CourseDetailResponseBody.User]?
     let onUserUpdated: () -> Void
+    let onUpdate : () async -> Void
     @State private var showingAddPersonView = false
     @State private var selectedUser: CourseDetailResponseBody.User?
     
@@ -89,10 +90,13 @@ struct CoursePeopleView: View {
             }
         }
         .sheet(isPresented: $showingAddPersonView) {
-            AddPersonToCourseView(courseId: courseId)
+            AddPersonToCourseView(courseId: courseId, onUpdate : onUpdate)
         }
         .sheet(item: $selectedUser) { user in
             UserEnrollmentManagementView(user: user, courseId: courseId, onUserUpdated: onUserUpdated)
+        }
+        .refreshable {
+            await onUpdate()
         }
     }
     
@@ -154,6 +158,6 @@ struct UserCardView: View {
 
 #Preview {
     NavigationStack {
-        CoursePeopleView(courseId: 1, users: previewCourseDetailData.users, onUserUpdated: {})
+        CoursePeopleView(courseId: 1, users: previewCourseDetailData.users, onUserUpdated: {}, onUpdate: {})
     }
 }

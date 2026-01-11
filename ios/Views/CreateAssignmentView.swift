@@ -11,6 +11,7 @@ struct CreateAssignmentView: View {
     let courseId: Int
     @Environment(\.dismiss) private var dismiss
     @StateObject private var vm = CreateAssignmentModel()
+    let onUpdate : () async -> Void
     
     @State private var title = ""
     @State private var submissionType: AssignmentsSubmissionType = .ADMIN_SCAN
@@ -76,6 +77,7 @@ struct CreateAssignmentView: View {
                             )
                             if vm.error == nil {
                                 dismiss()
+                                await onUpdate()
                             }
                         }
                     } label: {
@@ -105,5 +107,5 @@ struct CreateAssignmentView: View {
 }
 
 #Preview {
-    CreateAssignmentView(courseId: 1)
+    CreateAssignmentView(courseId: 1, onUpdate: {})
 }

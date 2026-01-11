@@ -51,94 +51,94 @@ struct LoginView: View {
                         .padding(.bottom, 32)
                 }
                 
-                // email and password form
-                VStack(alignment: .leading, spacing: 16) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Email")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.primary)
-                        
-                        TextField("professor@university.edu", text: $email)
-                            .textFieldStyle(PlainTextFieldStyle())
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(10)
-                            .autocapitalization(.none)
-                            .keyboardType(.emailAddress)
-                            .disabled(createUserModel.isLoading)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Password")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.primary)
-                        
-                        SecureField("Enter your password", text: $password)
-                            .textFieldStyle(PlainTextFieldStyle())
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(10)
-                            .disabled(createUserModel.isLoading)
-                    }
-                    
-                    if let error = errorMessage {
-                        Text(error)
-                            .font(.system(size: 14))
-                            .foregroundColor(.red)
-                    }
-                    
-                    HStack {
-                        Button(action: {
-                            // handle forgot password
-                        }) {
-                            Text("Forgot password?")
-                                .font(.system(size: 16))
-                                .foregroundColor(.blue)
-                        }
-                        .disabled(createUserModel.isLoading)
-                        Spacer()
-                    }
-                    .padding(.top, 4)
-                    
-                    Button(action: {
-                        handleEmailSignIn()
-                    }) {
-                        if createUserModel.isLoading {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                        } else {
-                            Text("Sign In")
-                                .font(.system(size: 18, weight: .semibold))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                        }
-                    }
-                    .background(Color.blue)
-                    .cornerRadius(10)
-                    .disabled(createUserModel.isLoading)
-                    .padding(.top, 16)
-                }
-                .padding(.horizontal, 32)
-                
-                HStack {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(height: 1)
-                    
-                    Text("or")
-                        .font(.system(size: 16))
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal, 12)
-                    
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(height: 1)
-                }
-                .padding(.horizontal, 32)
-                .padding(.vertical, 32)
+//                // email and password form
+//                VStack(alignment: .leading, spacing: 16) {
+//                    VStack(alignment: .leading, spacing: 8) {
+//                        Text("Email")
+//                            .font(.system(size: 16, weight: .medium))
+//                            .foregroundColor(.primary)
+//                        
+//                        TextField("professor@university.edu", text: $email)
+//                            .textFieldStyle(PlainTextFieldStyle())
+//                            .padding()
+//                            .background(Color(.systemGray6))
+//                            .cornerRadius(10)
+//                            .autocapitalization(.none)
+//                            .keyboardType(.emailAddress)
+//                            .disabled(createUserModel.isLoading)
+//                    }
+//                    
+//                    VStack(alignment: .leading, spacing: 8) {
+//                        Text("Password")
+//                            .font(.system(size: 16, weight: .medium))
+//                            .foregroundColor(.primary)
+//                        
+//                        SecureField("Enter your password", text: $password)
+//                            .textFieldStyle(PlainTextFieldStyle())
+//                            .padding()
+//                            .background(Color(.systemGray6))
+//                            .cornerRadius(10)
+//                            .disabled(createUserModel.isLoading)
+//                    }
+//                    
+//                    if let error = errorMessage {
+//                        Text(error)
+//                            .font(.system(size: 14))
+//                            .foregroundColor(.red)
+//                    }
+//                    
+//                    HStack {
+//                        Button(action: {
+//                            // handle forgot password
+//                        }) {
+//                            Text("Forgot password?")
+//                                .font(.system(size: 16))
+//                                .foregroundColor(.blue)
+//                        }
+//                        .disabled(createUserModel.isLoading)
+//                        Spacer()
+//                    }
+//                    .padding(.top, 4)
+//                    
+//                    Button(action: {
+//                        handleEmailSignIn()
+//                    }) {
+//                        if createUserModel.isLoading {
+//                            ProgressView()
+//                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+//                                .frame(maxWidth: .infinity)
+//                                .padding(.vertical, 16)
+//                        } else {
+//                            Text("Sign In")
+//                                .font(.system(size: 18, weight: .semibold))
+//                                .foregroundColor(.white)
+//                                .frame(maxWidth: .infinity)
+//                                .padding(.vertical, 16)
+//                        }
+//                    }
+//                    .background(Color.blue)
+//                    .cornerRadius(10)
+//                    .disabled(createUserModel.isLoading)
+//                    .padding(.top, 16)
+//                }
+//                .padding(.horizontal, 32)
+//                
+//                HStack {
+//                    Rectangle()
+//                        .fill(Color.gray.opacity(0.3))
+//                        .frame(height: 1)
+//                    
+//                    Text("or")
+//                        .font(.system(size: 16))
+//                        .foregroundColor(.secondary)
+//                        .padding(.horizontal, 12)
+//                    
+//                    Rectangle()
+//                        .fill(Color.gray.opacity(0.3))
+//                        .frame(height: 1)
+//                }
+//                .padding(.horizontal, 32)
+//                .padding(.vertical, 32)
                 
                 VStack(spacing: 16) {
                     Button(action: {
@@ -160,42 +160,42 @@ struct LoginView: View {
                     }
                     .disabled(createUserModel.isLoading)
                     
-                    Button(action: {
-                        handleGitHubSignIn()
-                    }) {
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(Color.gray.opacity(0.3))
-                                .frame(width: 24, height: 24)
-                            
-                            Text("Continue with GitHub")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(.primary)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
-                    }
-                    .disabled(createUserModel.isLoading)
+//                    Button(action: {
+//                        handleGitHubSignIn()
+//                    }) {
+//                        HStack(spacing: 12) {
+//                            Circle()
+//                                .fill(Color.gray.opacity(0.3))
+//                                .frame(width: 24, height: 24)
+//                            
+//                            Text("Continue with GitHub")
+//                                .font(.system(size: 16, weight: .medium))
+//                                .foregroundColor(.primary)
+//                        }
+//                        .frame(maxWidth: .infinity)
+//                        .padding(.vertical, 16)
+//                        .background(Color(.systemGray6))
+//                        .cornerRadius(10)
+//                    }
+//                    .disabled(createUserModel.isLoading)
                 }
                 .padding(.horizontal, 32)
-                
-                HStack(spacing: 4) {
-                    Text("Don't have an account?")
-                        .font(.system(size: 15))
-                        .foregroundColor(.secondary)
-                    
-                    Button(action: {
-                        // handle contact institution
-                    }) {
-                        Text("Contact your institution")
-                            .font(.system(size: 15))
-                            .foregroundColor(.blue)
-                    }
-                }
-                .padding(.top, 40)
-                .padding(.bottom, 32)
+//                
+//                HStack(spacing: 4) {
+//                    Text("Don't have an account?")
+//                        .font(.system(size: 15))
+//                        .foregroundColor(.secondary)
+//                    
+//                    Button(action: {
+//                        // handle contact institution
+//                    }) {
+//                        Text("Contact your institution")
+//                            .font(.system(size: 15))
+//                            .foregroundColor(.blue)
+//                    }
+//                }
+//                .padding(.top, 40)
+//                .padding(.bottom, 32)
             }
         }
         .sheet(isPresented: $showCreateAccount) {

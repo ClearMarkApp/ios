@@ -26,7 +26,11 @@ struct ClassListView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     VStack(spacing: 24) {
                         ForEach(classes, id: \ClassListResponseBody.Course.id) { (course: ClassListResponseBody.Course) in
-                            NavigationLink(destination: CourseDetailView(courseId: course.id)) {
+                            NavigationLink(destination: CourseDetailView(courseId: course.id, onCourseDeleted: {
+                                Task {
+                                    await onRefresh()
+                                }
+                            })) {
                                 ClassListCardView(course : course)
                             }
                         }

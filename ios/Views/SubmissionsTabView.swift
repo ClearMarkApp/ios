@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SubmissionsTabView: View {
     let assignmentInfo: AssignmentInfoResponseBody
+    @StateObject private var viewModel = GetAssignmentCSVModel()
+    @State private var showShareSheet = false
     
     // Computed properties to split the users
     private var pendingUsers: [AssignmentInfoResponseBody.User] {
@@ -32,6 +34,32 @@ struct SubmissionsTabView: View {
                 Text("Submissions")
                     .fontWeight(.bold)
                     .font(.title)
+                
+                Button("Export CSV") {
+                    Task {
+                        await viewModel.fetchCSV(assignmentId: assignmentInfo.id)
+                        if viewModel.csvData != nil {
+                            showShareSheet = true
+                        }
+                    }
+                }
+                .disabled(viewModel.isLoading)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(12)
+                
+                if viewModel.isLoading {
+                    ProgressView()
+                }
+                
+                if let error = viewModel.error {
+                    Text("Error: \(error)")
+                        .foregroundColor(.red)
+                }
+                
+                
                 if !pendingUsers.isEmpty {
                     SectionView(title: "Pending", users: pendingUsers, assignmentInfo: assignmentInfo)
                 }
@@ -42,7 +70,36 @@ struct SubmissionsTabView: View {
             }
             .padding()
         }
+        .sheet(isPresented: $showShareSheet) {
+            if let csvData = viewModel.csvData {
+                ShareSheet(items: [createCSVFile(from: csvData)])
+            }
+        }
     }
+    
+    private func createCSVFile(from data: Data) -> URL {
+        let tempDir = FileManager.default.temporaryDirectory
+        let fileName = "assignment_\(Date().timeIntervalSince1970).csv"
+        let fileURL = tempDir.appendingPathComponent(fileName)
+        
+        try? data.write(to: fileURL)
+        return fileURL
+    }
+}
+
+
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        let controller = UIActivityViewController(
+            activityItems: items,
+            applicationActivities: nil
+        )
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 struct SectionView: View {

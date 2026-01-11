@@ -14,7 +14,7 @@ class UploadSubmissionModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: String?
     
-    private let baseURL = "https://clearmark-4so0.onrender.com"
+    private let baseURL = "https://clearmark-pws1.onrender.com"
     private let apiKey = "nob"
     
     func uploadFile(fileURL: URL, userId: Int, assignmentId: Int) async {

@@ -38,7 +38,7 @@ final class APIClient {
     static let shared = APIClient()
     private init() {}
 
-    private let baseURL = URL(string: "https://clearmark-4so0.onrender.com")!
+    private let baseURL = URL(string: "https://clearmark-pws1.onrender.com")!
     private let apiKey = "nob"
 
     func request<T: Decodable>(

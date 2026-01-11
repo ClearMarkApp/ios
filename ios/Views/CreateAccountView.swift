@@ -12,16 +12,25 @@ struct CreateAccountView: View {
     @State private var firstName: String
     @State private var lastName: String
     @State private var email: String
-    
+
+    let title: String
+    let subtitle: String
+    let accountType: UsersAccountType
     let onAccountCreated: (GoogleUser) -> Void
     let onCancel: () -> Void
-    
+
     init(firstName: String, lastName: String, email: String,
+         title: String = "Create Account",
+         subtitle: String = "Complete your profile to get started",
+         accountType: UsersAccountType = .TEACHER,
          onAccountCreated: @escaping (GoogleUser) -> Void,
          onCancel: @escaping () -> Void) {
         _firstName = State(initialValue: firstName)
         _lastName = State(initialValue: lastName)
         _email = State(initialValue: email)
+        self.title = title
+        self.subtitle = subtitle
+        self.accountType = accountType
         self.onAccountCreated = onAccountCreated
         self.onCancel = onCancel
     }
@@ -32,10 +41,10 @@ struct CreateAccountView: View {
                 VStack(spacing: 24) {
                     // Header
                     VStack(spacing: 8) {
-                        Text("Create Account")
+                        Text(title)
                             .font(.system(size: 32, weight: .bold))
-                        
-                        Text("Complete your profile to get started")
+
+                        Text(subtitle)
                             .font(.system(size: 16))
                             .foregroundColor(.secondary)
                     }
@@ -148,7 +157,7 @@ struct CreateAccountView: View {
             firstName: firstName.trimmingCharacters(in: .whitespaces),
             lastName: lastName.trimmingCharacters(in: .whitespaces),
             email: email,
-            accountType: .TEACHER
+            accountType: accountType
         )
         
         if createUserModel.message != nil && createUserModel.error == nil {

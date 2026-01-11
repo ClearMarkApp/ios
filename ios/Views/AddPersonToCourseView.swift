@@ -99,6 +99,9 @@ struct AddPersonToCourseView: View {
                     firstName: "",
                     lastName: "",
                     email: email.trimmingCharacters(in: .whitespaces),
+                    title: "Add Student",
+                    subtitle: "Enter student information to add them to the course",
+                    accountType: .STUDENT,
                     onAccountCreated: { user in
                         Task {
                             await handleUserCreated()

@@ -34,17 +34,21 @@ struct HomeView: View {
                 Text(error)
                 Button("Retry") {
                     Task {
-                        await vm.fetchCourses(email: user!.email)
+                        if let email = user?.email {
+                            await vm.fetchCourses(email: email)
+                        }
                     }
                 }
             } else {
                 TabView {
                     NavigationStack {
                         ClassListView(
-                            email: user!.email,
+                            email: user?.email ?? "",
                             classData: vm.classData,
                             onRefresh: {
-                                await vm.fetchCourses(email: user!.email)
+                                if let email = user?.email {
+                                    await vm.fetchCourses(email: email)
+                                }
                             }
                         )
                     }
@@ -62,7 +66,9 @@ struct HomeView: View {
             }
         }
         .task {
-            await vm.fetchCourses(email: user!.email)
+            if let email = user?.email {
+                await vm.fetchCourses(email: email)
+            }
         }
     }
 }
@@ -70,3 +76,4 @@ struct HomeView: View {
 #Preview {
     HomeView(user: .constant(GoogleUser(firstName: "Test", lastName: "User", email: "test@test.com")))
 }
+

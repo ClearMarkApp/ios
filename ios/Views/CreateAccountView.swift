@@ -12,7 +12,6 @@ struct CreateAccountView: View {
     @State private var firstName: String
     @State private var lastName: String
     @State private var email: String
-    @State private var selectedAccountType: UsersAccountType = .TEACHER
     
     let onAccountCreated: (GoogleUser) -> Void
     let onCancel: () -> Void
@@ -83,19 +82,6 @@ struct CreateAccountView: View {
                                 .foregroundColor(.secondary)
                         }
                         
-                        // Account Type
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Account Type")
-                                .font(.system(size: 16, weight: .medium))
-                            
-                            Picker("Account Type", selection: $selectedAccountType) {
-                                Text("Professor").tag(UsersAccountType.TEACHER)
-                                Text("Student").tag(UsersAccountType.STUDENT)
-                            }
-                            .pickerStyle(SegmentedPickerStyle())
-                            .disabled(createUserModel.isLoading)
-                        }
-                        
                         // Error message
                         if let error = createUserModel.error {
                             Text(error)
@@ -162,7 +148,7 @@ struct CreateAccountView: View {
             firstName: firstName.trimmingCharacters(in: .whitespaces),
             lastName: lastName.trimmingCharacters(in: .whitespaces),
             email: email,
-            accountType: selectedAccountType
+            accountType: .TEACHER
         )
         
         if createUserModel.message != nil && createUserModel.error == nil {
@@ -189,3 +175,4 @@ struct CreateAccountView: View {
         onCancel: {}
     )
 }
+

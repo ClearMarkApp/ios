@@ -362,6 +362,29 @@ struct UserSubmissionView: View {
                 AIGradingLoadingView()
                     .transition(.opacity.combined(with: .scale))
             }
+            
+            if vm.isLoading {
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .overlay(
+                        VStack(spacing: 20) {
+                            ProgressView()
+                                .scaleEffect(1.5)
+                                .progressViewStyle(CircularProgressViewStyle(tint: .black))
+                            
+                            Text("Uploading PDF...")
+                                .font(.system(size: 17, weight: .semibold))
+                                .foregroundColor(.black)
+                        }
+                        .padding(40)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color(.systemBackground))
+                                .shadow(color: Color.black.opacity(0.3), radius: 20, x: 0, y: 10)
+                        )
+                    )
+                    .transition(.opacity)
+            }
         }
         .navigationTitle("Submission Review")
         .navigationBarTitleDisplayMode(.inline)
@@ -373,6 +396,9 @@ struct UserSubmissionView: View {
                 print("PDF selected: \(url)")
                 Task {
                     await vm.uploadFile(fileURL: url, userId: userId, assignmentId: assignmentId)
+                    if vm.error == nil {
+                        await refetch()
+                    }
                 }
                 print("allegedly sent")
             })
@@ -383,6 +409,9 @@ struct UserSubmissionView: View {
                 print("PDF scanned and saved at: \(pdfURL.path)")
                 Task {
                     await vm.uploadFile(fileURL: pdfURL, userId: userId, assignmentId: assignmentId)
+                    if vm.error == nil {
+                        await refetch()
+                    }
                 }
                 print("allegedly sent")
             }

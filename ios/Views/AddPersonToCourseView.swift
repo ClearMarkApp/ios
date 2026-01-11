@@ -9,14 +9,23 @@ import SwiftUI
 
 struct AddPersonToCourseView: View {
     let courseId: Int
+    let onUpdate: () async -> Void
+    
     @Environment(\.dismiss) private var dismiss
     @StateObject private var vm = CreateEnrollmentModel()
-    let onUpdate : () async -> Void
+    @StateObject private var checkUserModel = CheckUserExistsModel()
 
     @State private var email = ""
+    @State private var isSubmitting = false
+    @State private var errorMessage: String?
+    @State private var showingCreateUserView = false
 
     private var isFormValid: Bool {
         !email.trimmingCharacters(in: .whitespaces).isEmpty && isValidEmail(email)
+    }
+
+    private var isBusy: Bool {
+        isSubmitting || vm.isLoading || checkUserModel.isLoading
     }
 
     var body: some View {
@@ -27,7 +36,7 @@ struct AddPersonToCourseView: View {
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
-                        .disabled(vm.isLoading)
+                        .disabled(isBusy)
                         .onChange(of: email) { _, newValue in
                             // trim whitespace as user types
                             email = newValue.trimmingCharacters(in: .whitespaces)
@@ -57,44 +66,108 @@ struct AddPersonToCourseView: View {
                     Button("Cancel") {
                         dismiss()
                     }
-                    .disabled(vm.isLoading)
+                    .disabled(isBusy)
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
                         Task {
-                            await vm.createEnrollment(
-                                courseId: courseId,
-                                email: email.trimmingCharacters(in: .whitespaces)
-                            )
-                            if vm.error == nil {
-                                dismiss()
-                                await onUpdate()
-                            }
+                            await handleAdd()
                         }
                     } label: {
-                        if vm.isLoading {
+                        if isBusy {
                             ProgressView()
                         } else {
                             Text("Add")
                         }
                     }
-                    .disabled(!isFormValid || vm.isLoading)
+                    .disabled(!isFormValid || isBusy)
                 }
             }
             .alert("Error", isPresented: Binding(
-                get: { vm.error != nil },
-                set: { if !$0 { vm.error = nil } }
+                get: { currentError != nil },
+                set: { if !$0 { clearErrors() } }
             )) {
                 Button("OK") {
-                    vm.error = nil
+                    clearErrors()
                 }
             } message: {
-                if let error = vm.error {
-                    Text(error)
-                }
+                Text(currentError ?? "Unknown error")
+            }
+            .sheet(isPresented: $showingCreateUserView) {
+                CreateAccountView(
+                    firstName: "",
+                    lastName: "",
+                    email: email.trimmingCharacters(in: .whitespaces),
+                    title: "Add Student",
+                    subtitle: "Enter student information to add them to the course",
+                    accountType: .STUDENT,
+                    onAccountCreated: { user in
+                        Task {
+                            await handleUserCreated()
+                        }
+                    },
+                    onCancel: {
+                        showingCreateUserView = false
+                    }
+                )
             }
         }
+    }
+
+    @MainActor
+    private func handleAdd() async {
+        let trimmedEmail = email.trimmingCharacters(in: .whitespaces)
+        guard isValidEmail(trimmedEmail) else { return }
+
+        isSubmitting = true
+        errorMessage = nil
+        defer { isSubmitting = false }
+
+        let exists = await checkUserModel.checkUserExists(email: trimmedEmail)
+
+        // Check if there was an error during the user existence check
+        if checkUserModel.error != nil {
+            // Don't proceed if we couldn't verify user existence
+            return
+        }
+
+        if exists {
+            await vm.createEnrollment(courseId: courseId, email: trimmedEmail)
+            if vm.error == nil {
+                dismiss()
+                await onUpdate()
+            }
+            return
+        }
+
+        // User doesn't exist, show create user view
+        showingCreateUserView = true
+    }
+
+    @MainActor
+    private func handleUserCreated() async {
+        showingCreateUserView = false
+
+        let trimmedEmail = email.trimmingCharacters(in: .whitespaces)
+
+        // Now enroll the newly created user in the course
+        await vm.createEnrollment(courseId: courseId, email: trimmedEmail)
+
+        if vm.error == nil {
+            dismiss()
+            await onUpdate()
+        }
+    }
+
+    private var currentError: String? {
+        errorMessage ?? vm.error ?? checkUserModel.error
+    }
+
+    private func clearErrors() {
+        errorMessage = nil
+        vm.error = nil
+        checkUserModel.error = nil
     }
 
     // helper: validate email format
@@ -107,5 +180,5 @@ struct AddPersonToCourseView: View {
 }
 
 #Preview {
-    AddPersonToCourseView(courseId: 1, onUpdate : {})
+    AddPersonToCourseView(courseId: 1, onUpdate: {})
 }
